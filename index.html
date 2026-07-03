@@ -1,0 +1,745 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Radley&family=Oswald:wght@400;500;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --bg-0:#151210;
+  --bg-1:#1c1815;
+  --panel:#221d19;
+  --panel-2:#2a2420;
+  --wood-edge:#3a2f26;
+  --gold:#c8aa6e;
+  --gold-bright:#e8c887;
+  --red:#a52d2d;
+  --red-bright:#d63a3a;
+  --str:#dd4c4c;
+  --agi:#4caf6e;
+  --int:#4c86dd;
+  --all:#b06fe0;
+  --text:#d8cbb8;
+  --text-dim:#8a7f72;
+}
+
+.dota-app{
+  background:
+    radial-gradient(ellipse at 50% -10%, #2c231b 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-0), #100d0b 100%);
+  color:var(--text);
+  font-family:'Oswald', sans-serif;
+  min-height:100vh;
+  padding:22px 18px 40px;
+  position:relative;
+  overflow-x:hidden;
+}
+.dota-app::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, transparent 1px, transparent 3px);
+  opacity:.5; pointer-events:none;
+}
+
+/* ===== HEADER ===== */
+.header{
+  text-align:center;
+  margin-bottom:22px;
+  position:relative;
+  z-index:1;
+}
+.header .eyebrow{
+  font-family:'Oswald',sans-serif;
+  letter-spacing:6px;
+  font-size:11px;
+  color:var(--red-bright);
+  text-transform:uppercase;
+  margin-bottom:6px;
+  font-weight:600;
+}
+.header h1{
+  font-family:'Cinzel', serif;
+  font-weight:900;
+  font-size:clamp(28px,5vw,44px);
+  letter-spacing:2px;
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, #8a6f3f);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 2px 12px rgba(0,0,0,.5);
+}
+.header .sub{
+  color:var(--text-dim);
+  font-size:13px;
+  margin-top:6px;
+  letter-spacing:1px;
+}
+.header-rule{
+  width:min(520px,80%);
+  height:1px;
+  margin:14px auto 0;
+  background:linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+  position:relative;
+}
+.header-rule::before{
+  content:"◆";
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  color:var(--gold);
+  font-size:10px;
+  background:var(--bg-0);
+  padding:0 10px;
+}
+
+/* ===== RANDOMIZER STAGE ===== */
+.stage{
+  max-width:720px;
+  margin:0 auto 26px;
+  position:relative;
+  z-index:1;
+}
+.stage-frame{
+  border:2px solid var(--wood-edge);
+  background:linear-gradient(180deg, var(--panel), var(--bg-1));
+  border-radius:6px;
+  padding:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,.5), inset 0 0 0 1px rgba(200,170,110,.08);
+  position:relative;
+}
+.stage-frame::before,.stage-frame::after,
+.corner-tl,.corner-tr,.corner-bl,.corner-br{ }
+.corner{
+  position:absolute; width:16px; height:16px;
+  border:2px solid var(--gold);
+  opacity:.6;
+}
+.corner.tl{ top:-2px; left:-2px; border-right:none; border-bottom:none;}
+.corner.tr{ top:-2px; right:-2px; border-left:none; border-bottom:none;}
+.corner.bl{ bottom:-2px; left:-2px; border-right:none; border-top:none;}
+.corner.br{ bottom:-2px; right:-2px; border-left:none; border-top:none;}
+
+.result-row{
+  display:flex;
+  gap:18px;
+  align-items:stretch;
+  min-height:150px;
+}
+.portrait-window{
+  width:220px;
+  min-width:220px;
+  height:150px;
+  border-radius:4px;
+  overflow:hidden;
+  position:relative;
+  background:#0c0a09;
+  border:1px solid rgba(200,170,110,.25);
+}
+.portrait-window img{
+  width:100%; height:100%; object-fit:cover;
+  display:block;
+  filter:saturate(1.05) contrast(1.05);
+}
+.portrait-window .attr-bar{
+  position:absolute; left:0; right:0; bottom:0; height:5px;
+}
+.portrait-window .placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif; font-size:13px; color:var(--text-dim);
+  text-align:center; padding:8px;
+}
+.portrait-window.spinning img{ animation:flicker .06s steps(1) infinite; }
+@keyframes flicker{ 0%{opacity:1;} 50%{opacity:.85;} 100%{opacity:1;} }
+
+.result-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:8px;
+}
+.result-info .placeholder-text{
+  color:var(--text-dim);
+  font-size:14px;
+  letter-spacing:1px;
+}
+.result-name{
+  font-family:'Cinzel', serif;
+  font-weight:700;
+  font-size:26px;
+  color:var(--gold-bright);
+  letter-spacing:1px;
+}
+.result-meta{
+  display:flex; align-items:center; gap:10px;
+  flex-wrap:wrap;
+}
+.attr-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  padding:4px 10px; border-radius:2px;
+  font-weight:600;
+  border:1px solid currentColor;
+}
+.attr-pill.str{ color:var(--str); }
+.attr-pill.agi{ color:var(--agi); }
+.attr-pill.int{ color:var(--int); }
+.attr-pill.all{ color:var(--all); }
+.attr-dot{ width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block;}
+
+.role-list{ display:flex; gap:6px; flex-wrap:wrap; }
+.role-chip{
+  font-size:10.5px; letter-spacing:.5px; text-transform:uppercase;
+  color:var(--text-dim); border:1px solid #4a4038;
+  padding:3px 8px; border-radius:2px;
+}
+.complexity{ display:flex; gap:3px; align-items:center; margin-top:2px; }
+.complexity span{ font-size:10px; color:var(--text-dim); letter-spacing:1px; margin-right:6px; text-transform:uppercase;}
+.complexity .dot{ width:7px; height:7px; border-radius:50%; background:#4a4038; }
+.complexity .dot.on{ background:var(--gold); }
+
+.controls-row{
+  display:flex; gap:12px; margin-top:20px; align-items:center; flex-wrap:wrap;
+}
+.btn-random{
+  font-family:'Cinzel', serif;
+  font-weight:700;
+  letter-spacing:2px;
+  font-size:15px;
+  color:#1a1310;
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold) 70%, #a68955);
+  border:1px solid #8a6f3f;
+  padding:13px 30px;
+  border-radius:3px;
+  cursor:pointer;
+  text-transform:uppercase;
+  box-shadow:0 4px 0 #6b5530, 0 8px 16px rgba(0,0,0,.4);
+  transition:transform .08s ease;
+}
+.btn-random:hover{ filter:brightness(1.08); }
+.btn-random:active{ transform:translateY(3px); box-shadow:0 1px 0 #6b5530, 0 3px 8px rgba(0,0,0,.4); }
+.btn-random:disabled{ opacity:.6; cursor:default; }
+
+.pool-count{
+  color:var(--text-dim);
+  font-size:12px;
+  letter-spacing:.5px;
+}
+.pool-count b{ color:var(--gold); }
+
+/* ===== FILTER BAR ===== */
+.filter-panel{
+  max-width:1100px;
+  margin:0 auto 18px;
+  position:relative; z-index:1;
+  border:1px solid var(--wood-edge);
+  background:var(--panel);
+  border-radius:5px;
+  padding:14px 16px;
+  display:flex; flex-wrap:wrap; gap:14px; align-items:center;
+}
+.search-box{
+  flex:1 1 200px;
+  min-width:180px;
+  position:relative;
+}
+.search-box input{
+  width:100%;
+  background:var(--bg-1);
+  border:1px solid #4a4038;
+  color:var(--text);
+  padding:9px 12px 9px 32px;
+  font-family:'Oswald',sans-serif;
+  font-size:13px;
+  border-radius:3px;
+  letter-spacing:.5px;
+}
+.search-box input:focus{ outline:1px solid var(--gold); border-color:var(--gold); }
+.search-box::before{
+  content:"⚲";
+  position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  color:var(--text-dim); font-size:13px;
+}
+
+.attr-tabs{ display:flex; gap:6px; }
+.attr-tab{
+  border:1px solid #4a4038;
+  background:var(--bg-1);
+  color:var(--text-dim);
+  padding:8px 12px;
+  font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  border-radius:3px; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  font-family:'Oswald',sans-serif; font-weight:500;
+}
+.attr-tab .attr-dot{ width:8px; height:8px; border-radius:50%; }
+.attr-tab[data-a="str"] .attr-dot{ background:var(--str); }
+.attr-tab[data-a="agi"] .attr-dot{ background:var(--agi); }
+.attr-tab[data-a="int"] .attr-dot{ background:var(--int); }
+.attr-tab[data-a="all"] .attr-dot{ background:var(--all); }
+.attr-tab[data-a="any"] .attr-dot{ background:var(--gold); }
+.attr-tab.active{ color:var(--text); border-color:var(--gold); background:var(--panel-2); }
+
+.diff-tabs{ display:flex; gap:6px; align-items:center; }
+.diff-tabs .diff-label{
+  color:var(--text-dim); font-size:11px; letter-spacing:1px; text-transform:uppercase; margin-right:2px;
+}
+.diff-tab{
+  border:1px solid #4a4038;
+  background:var(--bg-1);
+  color:var(--text-dim);
+  padding:8px 12px;
+  font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  border-radius:3px; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  font-family:'Oswald',sans-serif; font-weight:500;
+  user-select:none;
+}
+.diff-tab .dots{ display:flex; gap:2px; }
+.diff-tab .dots .dot{ width:6px; height:6px; border-radius:50%; background:#5a4f45; }
+.diff-tab.on{ color:var(--text); border-color:var(--gold); background:var(--panel-2); }
+.diff-tab.on .dots .dot{ background:var(--gold); }
+.diff-tab.off{ opacity:.45; text-decoration:line-through; }
+
+.role-select{
+  position:relative;
+}
+.role-select select{
+  background:var(--bg-1);
+  border:1px solid #4a4038;
+  color:var(--text);
+  padding:9px 12px;
+  font-family:'Oswald',sans-serif;
+  font-size:12px;
+  letter-spacing:.5px;
+  border-radius:3px;
+  cursor:pointer;
+}
+
+.reset-link{
+  color:var(--text-dim);
+  font-size:12px;
+  letter-spacing:.5px;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.reset-link:hover{ color:var(--gold); }
+
+/* ===== GRID ===== */
+.grid-wrap{
+  max-width:1100px;
+  margin:0 auto;
+  position:relative; z-index:1;
+}
+.grid-caption{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:10px; color:var(--text-dim); font-size:12px; letter-spacing:.5px;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(96px,1fr));
+  gap:6px;
+}
+.hero-card{
+  position:relative;
+  border-radius:3px;
+  overflow:hidden;
+  cursor:pointer;
+  border:1px solid #3a322b;
+  background:#0c0a09;
+  aspect-ratio:16/9;
+  transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.hero-card img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:saturate(.95);
+}
+.hero-card .placeholder{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--text-dim); text-align:center; padding:2px;
+}
+.hero-card .attr-edge{
+  position:absolute; left:0; right:0; bottom:0; height:4px;
+}
+.hero-card .name-tag{
+  position:absolute; left:0; right:0; bottom:0;
+  font-size:9px; letter-spacing:.3px;
+  color:#fff;
+  background:linear-gradient(0deg, rgba(0,0,0,.85), transparent);
+  padding:9px 4px 3px;
+  text-align:center;
+  opacity:0;
+  transition:opacity .12s ease;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.hero-card:hover{ transform:translateY(-2px) scale(1.04); border-color:var(--gold); box-shadow:0 6px 14px rgba(0,0,0,.5); z-index:2; }
+.hero-card:hover .name-tag{ opacity:1; }
+.hero-card.dimmed{ opacity:.25; filter:grayscale(.6); }
+.hero-card.pulse{ animation:pulseGlow .5s ease; }
+@keyframes pulseGlow{
+  0%{ box-shadow:0 0 0 0 rgba(232,200,135,.9); }
+  100%{ box-shadow:0 0 0 14px rgba(232,200,135,0); }
+}
+
+.attr-edge.str{ background:var(--str); }
+.attr-edge.agi{ background:var(--agi); }
+.attr-edge.int{ background:var(--int); }
+.attr-edge.all{ background:var(--all); }
+
+@media (max-width:600px){
+  .result-row{ flex-direction:column; }
+  .portrait-window{ width:100%; }
+}
+</style>
+
+<div class="dota-app">
+  <div class="header">
+    <div class="eyebrow">Dota 2</div>
+    <h1>Nicole's Hero Randomizer</h1>
+    <div class="sub">Filter the pool if you want, and pick a fucking hero.</div>
+    <div class="header-rule"></div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-frame">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="result-row">
+        <div class="portrait-window" id="portraitWindow">
+          <div class="placeholder">PRESS<br>RANDOM</div>
+        </div>
+        <div class="result-info" id="resultInfo">
+          <div class="placeholder-text">No hero selected yet. Set your filters below and roll.</div>
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="btn-random" id="rollBtn">Random Hero</button>
+        <span class="pool-count" id="poolCount"></span>
+        <span style="flex:1"></span>
+        <span class="reset-link" id="resetFilters">Reset filters</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-panel">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search hero name...">
+    </div>
+    <div class="attr-tabs" id="attrTabs">
+      <div class="attr-tab active" data-a="any"><span class="attr-dot"></span>All</div>
+      <div class="attr-tab" data-a="str"><span class="attr-dot"></span>Strength</div>
+      <div class="attr-tab" data-a="agi"><span class="attr-dot"></span>Agility</div>
+      <div class="attr-tab" data-a="int"><span class="attr-dot"></span>Intelligence</div>
+      <div class="attr-tab" data-a="all"><span class="attr-dot"></span>Universal</div>
+    </div>
+    <div class="diff-tabs" id="diffTabs">
+      <span class="diff-label">Difficulty</span>
+      <div class="diff-tab on" data-d="1"><span class="dots"><span class="dot"></span></span>Easy</div>
+      <div class="diff-tab on" data-d="2"><span class="dots"><span class="dot"></span><span class="dot"></span></span>Medium</div>
+      <div class="diff-tab on" data-d="3"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>Hard</div>
+    </div>
+    <div class="role-select">
+      <select id="roleFilter">
+        <option value="any">All Roles</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid-caption">
+      <span id="gridCaptionLeft">Showing all heroes</span>
+      <span id="gridCaptionRight"></span>
+    </div>
+    <div class="hero-grid" id="heroGrid"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+const HEROES = [
+["antimage","Anti-Mage","agi",["Carry","Escape","Nuker"],2],
+["axe","Axe","str",["Initiator","Durable","Disabler","Jungler"],2],
+["bane","Bane","all",["Support","Disabler","Nuker"],2],
+["bloodseeker","Bloodseeker","agi",["Carry","Disabler","Nuker"],2],
+["crystal_maiden","Crystal Maiden","int",["Support","Disabler","Nuker"],1],
+["drow_ranger","Drow Ranger","agi",["Carry","Pusher"],2],
+["earthshaker","Earthshaker","str",["Support","Initiator","Disabler","Nuker"],2],
+["juggernaut","Juggernaut","agi",["Carry","Pusher","Escape"],2],
+["mirana","Mirana","agi",["Carry","Support","Disabler","Nuker","Escape"],2],
+["nevermore","Shadow Fiend","agi",["Carry","Nuker"],2],
+["morphling","Morphling","agi",["Carry","Escape","Durable"],3],
+["skeleton_king","Wraith King","str",["Carry","Initiator","Durable","Disabler"],1],
+["vengefulspirit","Vengeful Spirit","all",["Support","Initiator","Disabler","Nuker"],2],
+["windrunner","Windranger","all",["Carry","Support","Disabler","Nuker","Escape"],2],
+["zuus","Zeus","int",["Nuker","Support","Pusher"],2],
+["kunkka","Kunkka","all",["Carry","Support","Initiator","Disabler","Nuker","Durable"],2],
+["lina","Lina","int",["Support","Carry","Nuker","Disabler"],2],
+["lion","Lion","int",["Support","Disabler","Nuker","Initiator"],1],
+["shadow_shaman","Shadow Shaman","all",["Support","Disabler","Nuker","Pusher"],2],
+["slardar","Slardar","str",["Carry","Initiator","Disabler","Durable"],2],
+["tidehunter","Tidehunter","all",["Initiator","Durable","Disabler","Nuker"],1],
+["witch_doctor","Witch Doctor","all",["Support","Disabler","Nuker"],1],
+["riki","Riki","agi",["Carry","Support","Escape","Disabler"],2],
+["enigma","Enigma","int",["Initiator","Disabler","Nuker","Jungler"],3],
+["tinker","Tinker","int",["Carry","Nuker","Pusher","Escape"],3],
+["sniper","Sniper","agi",["Carry","Pusher"],1],
+["necrolyte","Necrophos","int",["Carry","Nuker","Durable"],2],
+["warlock","Warlock","all",["Support","Durable","Disabler","Nuker"],2],
+["beastmaster","Beastmaster","str",["Initiator","Durable","Disabler","Jungler"],2],
+["queenofpain","Queen of Pain","int",["Carry","Nuker","Escape"],2],
+["venomancer","Venomancer","all",["Support","Disabler","Nuker","Pusher"],1],
+["faceless_void","Faceless Void","agi",["Carry","Initiator","Disabler","Durable"],2],
+["skywrath_mage","Skywrath Mage","all",["Support","Nuker","Disabler"],1],
+["dragon_knight","Dragon Knight","str",["Carry","Durable","Pusher","Initiator"],1],
+["ancient_apparition","Ancient Apparition","int",["Support","Nuker","Disabler"],1],
+["rattletrap","Clockwerk","all",["Initiator","Durable","Disabler","Support"],2],
+["puck","Puck","int",["Support","Nuker","Disabler","Escape"],2],
+["pudge","Pudge","all",["Support","Disabler","Initiator","Durable"],2],
+["spirit_breaker","Spirit Breaker","all",["Initiator","Durable","Disabler","Carry"],1],
+["ursa","Ursa","agi",["Carry","Jungler","Escape"],2],
+["nyx_assassin","Nyx Assassin","all",["Support","Initiator","Disabler","Nuker"],2],
+["terrorblade","Terrorblade","agi",["Carry","Pusher","Escape"],3],
+["phantom_lancer","Phantom Lancer","agi",["Carry","Pusher","Escape"],2],
+["doom_bringer","Doom","str",["Carry","Initiator","Disabler","Durable"],2],
+["ember_spirit","Ember Spirit","agi",["Carry","Nuker","Escape"],3],
+["phantom_assassin","Phantom Assassin","agi",["Carry","Escape"],1],
+["viper","Viper","agi",["Carry","Nuker","Disabler","Durable"],1],
+["luna","Luna","agi",["Carry","Pusher","Nuker"],2],
+["dragon_knight2",],
+["dark_seer","Dark Seer","all",["Support","Initiator","Disabler","Durable"],2],
+["clinkz","Clinkz","agi",["Carry","Nuker","Escape"],2],
+["omniknight","Omniknight","all",["Support","Durable","Disabler"],1],
+["enchantress","Enchantress","all",["Support","Nuker","Jungler","Durable"],1],
+["huskar","Huskar","all",["Carry","Nuker","Durable"],2],
+["night_stalker","Night Stalker","str",["Carry","Initiator","Disabler","Durable"],2],
+["broodmother","Broodmother","agi",["Carry","Pusher","Escape"],3],
+["bounty_hunter","Bounty Hunter","all",["Support","Initiator","Escape","Nuker"],2],
+["weaver","Weaver","agi",["Carry","Escape","Nuker"],2],
+["jakiro","Jakiro","all",["Support","Nuker","Disabler"],1],
+["batrider","Batrider","all",["Initiator","Disabler","Escape","Nuker"],2],
+["chaos_knight","Chaos Knight","str",["Carry","Initiator","Durable"],1],
+["magnataur","Magnus","str",["Initiator","Disabler","Durable","Nuker"],2],
+["bristleback","Bristleback","str",["Carry","Durable","Initiator"],2],
+["tusk","Tusk","str",["Initiator","Disabler","Durable","Support"],2],
+["skywrath_mage2",],
+["abyssal_underlord","Underlord","all",["Support","Durable","Initiator","Pusher"],2],
+["legion_commander","Legion Commander","str",["Carry","Initiator","Disabler","Durable"],2],
+["undying","Undying","str",["Support","Durable","Disabler"],1],
+["rubick","Rubick","int",["Support","Disabler","Nuker"],2],
+["disruptor","Disruptor","all",["Support","Disabler","Nuker"],2],
+["nature's_prophet_placeholder",],
+["furion","Nature's Prophet","all",["Carry","Support","Pusher","Escape"],2],
+["life_stealer","Lifestealer","str",["Carry","Durable","Escape"],1],
+["dark_willow","Dark Willow","int",["Support","Disabler","Nuker","Escape"],2],
+["pangolier","Pangolier","all",["Carry","Initiator","Disabler","Escape"],3],
+["grimstroke","Grimstroke","all",["Support","Disabler","Nuker"],2],
+["hoodwink","Hoodwink","agi",["Support","Disabler","Nuker","Escape"],2],
+["void_spirit","Void Spirit","all",["Carry","Nuker","Escape","Disabler"],2],
+["snapfire","Snapfire","all",["Support","Nuker","Disabler"],2],
+["mars","Mars","str",["Initiator","Durable","Disabler","Carry"],2],
+["dawnbreaker","Dawnbreaker","all",["Carry","Support","Durable","Initiator"],1],
+["marci","Marci","all",["Carry","Support","Initiator","Escape"],2],
+["primal_beast","Primal Beast","str",["Initiator","Durable","Disabler"],1],
+["muerta","Muerta","agi",["Carry","Nuker","Support"],2],
+["kez","Kez","agi",["Carry","Escape","Nuker"],3],
+["ringmaster","Ringmaster","all",["Support","Disabler","Nuker"],2],
+["medusa","Medusa","agi",["Carry","Durable"],2],
+["troll_warlord","Troll Warlord","agi",["Carry","Pusher"],1],
+["centaur","Centaur Warrunner","str",["Initiator","Durable","Disabler","Carry"],1],
+["magnataur2",],
+["spectre","Spectre","agi",["Carry","Durable","Escape"],2],
+["gyrocopter","Gyrocopter","all",["Carry","Nuker","Pusher"],1],
+["alchemist","Alchemist","str",["Carry","Jungler","Durable"],1],
+["invoker","Invoker","all",["Carry","Support","Nuker","Disabler","Escape"],3],
+["silencer","Silencer","all",["Support","Carry","Disabler","Nuker"],2],
+["lycan","Lycan","str",["Carry","Pusher","Jungler"],1],
+["brewmaster","Brewmaster","str",["Initiator","Durable","Disabler","Jungler"],3],
+["shadow_demon","Shadow Demon","all",["Support","Disabler","Nuker","Initiator"],2],
+["lone_druid","Lone Druid","agi",["Carry","Pusher","Durable"],3],
+["earth_spirit","Earth Spirit","str",["Support","Initiator","Disabler","Durable"],3],
+["treant","Treant Protector","str",["Support","Durable","Disabler","Nuker"],1],
+["oracle","Oracle","all",["Support","Disabler","Escape"],2],
+["winter_wyvern","Winter Wyvern","all",["Support","Disabler","Nuker","Durable"],2],
+["arc_warden","Arc Warden","agi",["Carry","Pusher","Nuker","Escape"],3],
+["elder_titan","Elder Titan","str",["Initiator","Disabler","Durable","Support"],2],
+["shredder","Timbersaw","all",["Carry","Durable","Disabler"],3],
+["bloodseeker2",],
+["templar_assassin","Templar Assassin","all",["Carry","Nuker","Escape"],2],
+["obsidian_destroyer","Outworld Destroyer","int",["Carry","Nuker","Disabler"],2],
+["storm_spirit","Storm Spirit","int",["Carry","Nuker","Escape"],3],
+["monkey_king","Monkey King","agi",["Carry","Initiator","Escape"],2],
+["naga_siren","Naga Siren","agi",["Carry","Pusher","Escape","Disabler"],2],
+["keeper_of_the_light","Keeper of the Light","int",["Support","Nuker","Pusher"],2],
+["visage","Visage","all",["Support","Durable","Nuker","Initiator"],3],
+["slark","Slark","agi",["Carry","Escape","Disabler"],2],
+["medusa2",],
+["meepo","Meepo","agi",["Carry","Escape","Pusher"],3],
+["treant2",],
+["troll_warlord2",],
+["techies","Techies","all",["Support","Nuker","Disabler","Pusher"],2],
+["chaos_knight2",],
+["wisp","Io","all",["Support","Escape","Durable"],2],
+["sand_king","Sand King","str",["Initiator","Disabler","Nuker","Durable"],2],
+["ogre_magi","Ogre Magi","str",["Support","Disabler","Nuker","Durable"],1]
+];
+
+// clean placeholder duplicate/junk entries from the compact list above
+const CLEAN = HEROES.filter(h => h.length === 5);
+
+const ATTR_LABEL = { str:"Strength", agi:"Agility", int:"Intelligence", all:"Universal" };
+const IMG = id => `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${id}.png`;
+
+let state = { attr:"any", role:"any", search:"", difficulty:new Set([1,2,3]) };
+let lastHero = null;
+
+// populate role filter
+const roleSet = new Set();
+CLEAN.forEach(h => h[3].forEach(r => roleSet.add(r)));
+const roleFilter = document.getElementById('roleFilter');
+[...roleSet].sort().forEach(r=>{
+  const opt = document.createElement('option');
+  opt.value = r; opt.textContent = r;
+  roleFilter.appendChild(opt);
+});
+
+function matchesFilter(h){
+  const [id,name,attr,roles,complexity] = h;
+  if(state.attr !== "any" && attr !== state.attr) return false;
+  if(state.role !== "any" && !roles.includes(state.role)) return false;
+  if(!state.difficulty.has(complexity)) return false;
+  if(state.search && !name.toLowerCase().includes(state.search.toLowerCase())) return false;
+  return true;
+}
+
+function renderGrid(){
+  const grid = document.getElementById('heroGrid');
+  grid.innerHTML = "";
+  const pool = CLEAN.filter(matchesFilter);
+  CLEAN.slice().sort((a,b)=>a[1].localeCompare(b[1])).forEach(h=>{
+    const [id,name,attr] = h;
+    const match = matchesFilter(h);
+    const card = document.createElement('div');
+    card.className = 'hero-card' + (match ? '' : ' dimmed');
+    card.dataset.id = id;
+    card.title = name;
+    card.innerHTML = `
+      <img src="${IMG(id)}" alt="${name}" loading="lazy"
+        onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',textContent:'${name.replace(/'/g,"")}'}))">
+      <div class="attr-edge ${attr}"></div>
+      <div class="name-tag">${name}</div>
+    `;
+    card.addEventListener('click', ()=>{ if(match) landOn(h); });
+    grid.appendChild(card);
+  });
+
+  document.getElementById('poolCount').innerHTML = `<b>${pool.length}</b> / ${CLEAN.length} heroes in pool`;
+  document.getElementById('gridCaptionLeft').textContent =
+    pool.length === CLEAN.length ? "Showing all heroes" : `Showing ${pool.length} matching heroes`;
+  return pool;
+}
+
+function attrPillHTML(attr){
+  return `<span class="attr-pill ${attr}"><span class="attr-dot"></span>${ATTR_LABEL[attr]}</span>`;
+}
+
+function landOn(hero){
+  const [id,name,attr,roles,complexity] = hero;
+  lastHero = hero;
+  const win = document.getElementById('portraitWindow');
+  win.classList.remove('spinning');
+  win.innerHTML = `<img src="${IMG(id)}" alt="${name}"
+      onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',textContent:'${name.replace(/'/g,"")}'}))">
+    <div class="attr-bar ${attr}" style="background:var(--${attr==='all'?'all':attr})"></div>`;
+
+  const info = document.getElementById('resultInfo');
+  info.innerHTML = `
+    <div class="result-name">${name}</div>
+    <div class="result-meta">${attrPillHTML(attr)}</div>
+    <div class="role-list">${roles.map(r=>`<span class="role-chip">${r}</span>`).join('')}</div>
+    <div class="complexity"><span>Difficulty</span>${[1,2,3].map(i=>`<span class="dot ${i<=complexity?'on':''}"></span>`).join('')}</div>
+  `;
+
+  // pulse the matching card in the grid
+  document.querySelectorAll('.hero-card').forEach(c=>c.classList.remove('pulse'));
+  const card = document.querySelector(`.hero-card[data-id="${id}"]`);
+  if(card){
+    card.classList.add('pulse');
+    card.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+  }
+}
+
+function rollRandom(){
+  const pool = CLEAN.filter(matchesFilter);
+  if(pool.length === 0){
+    const info = document.getElementById('resultInfo');
+    info.innerHTML = `<div class="placeholder-text">No heroes match your filters. Try widening them.</div>`;
+    return;
+  }
+  const btn = document.getElementById('rollBtn');
+  btn.disabled = true;
+  const win = document.getElementById('portraitWindow');
+  win.classList.add('spinning');
+
+  let ticks = 0;
+  const maxTicks = 16 + Math.floor(Math.random()*6);
+  const interval = setInterval(()=>{
+    const flash = pool[Math.floor(Math.random()*pool.length)];
+    win.innerHTML = `<img src="${IMG(flash[0])}" alt="">`;
+    ticks++;
+    if(ticks >= maxTicks){
+      clearInterval(interval);
+      btn.disabled = false;
+      const finalHero = pool[Math.floor(Math.random()*pool.length)];
+      landOn(finalHero);
+    }
+  }, 70);
+}
+
+document.getElementById('rollBtn').addEventListener('click', rollRandom);
+
+document.getElementById('searchInput').addEventListener('input', e=>{
+  state.search = e.target.value;
+  renderGrid();
+});
+roleFilter.addEventListener('change', e=>{
+  state.role = e.target.value;
+  renderGrid();
+});
+document.getElementById('diffTabs').addEventListener('click', e=>{
+  const tab = e.target.closest('.diff-tab');
+  if(!tab) return;
+  const d = Number(tab.dataset.d);
+  if(state.difficulty.has(d)){
+    if(state.difficulty.size === 1) return; // keep at least one difficulty active
+    state.difficulty.delete(d);
+    tab.classList.remove('on'); tab.classList.add('off');
+  } else {
+    state.difficulty.add(d);
+    tab.classList.add('on'); tab.classList.remove('off');
+  }
+  renderGrid();
+});
+document.getElementById('attrTabs').addEventListener('click', e=>{
+  const tab = e.target.closest('.attr-tab');
+  if(!tab) return;
+  document.querySelectorAll('.attr-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  state.attr = tab.dataset.a;
+  renderGrid();
+});
+document.getElementById('resetFilters').addEventListener('click', ()=>{
+  state = { attr:"any", role:"any", search:"", difficulty:new Set([1,2,3]) };
+  document.getElementById('searchInput').value = "";
+  roleFilter.value = "any";
+  document.querySelectorAll('.attr-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.attr-tab[data-a="any"]').classList.add('active');
+  document.querySelectorAll('.diff-tab').forEach(t=>{ t.classList.add('on'); t.classList.remove('off'); });
+  renderGrid();
+});
+
+renderGrid();
+})();
+</script>
