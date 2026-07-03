@@ -1,4 +1,4 @@
-# Dota 2 Hero Randomizer
+# Dota 2 Hero Randomizer 
 
 A single-page hero randomizer styled after Dota 2's in-game hero selection screen. Filter by attribute, role, and difficulty, then roll for a random hero.
 
